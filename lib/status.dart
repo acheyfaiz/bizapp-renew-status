@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:bizapptrack/button.dart';
+import 'package:bizapptrack/constant.dart';
 import 'package:bizapptrack/data_user.dart';
+import 'package:bizapptrack/env.dart';
 import 'package:bizapptrack/list_to_excel.dart';
 import 'package:bizapptrack/loading_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +18,6 @@ class TestRenew extends StatefulWidget {
 
 class _TestRenewState extends State<TestRenew> {
 
-
   TextEditingController usernameController = TextEditingController();
 
   @override
@@ -24,13 +25,23 @@ class _TestRenewState extends State<TestRenew> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
+        toolbarHeight: 100,
         title: const Text("Status Renew Bizapp User", style: TextStyle(
           color: Colors.white
         )),
-        actions: const [
+        actions: [
+
+          BizappButton(
+            color: Colors.transparent,
+            title: "Export to Excel",
+            tapCallback: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=> const ListToExcel())),
+          ),
+
+          const SizedBox(width: 20),
+
           Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: Text('v1.1.0', style: TextStyle(
+            padding: const EdgeInsets.only(right: 20),
+            child: Text(Env.versi, style: const TextStyle(
               color: Colors.white
             )),
           )
@@ -41,80 +52,84 @@ class _TestRenewState extends State<TestRenew> {
         alignment: Alignment.topCenter,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-
-              const SizedBox(height: 20),
-
-              Wrap(
-                runSpacing: 10,
+          child: LayoutBuilder(
+            builder: (context, constraints){
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
 
-                  SizedBox(
-                    width: MediaQuery.sizeOf(context).width * .5,
-                    child: TextFormField(
-                      onFieldSubmitted: (val){
-                        _check();
-                      },
-                      style: const TextStyle(fontSize: 16),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (e) => e!.isEmpty ? 'user ID cannot empty' : null,
-                      controller: usernameController,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
-                      ],
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 0, style: BorderStyle.solid,
-                          ),
-                        ),
-                        filled: true,
-                        labelStyle: TextStyle(fontSize: 20),
-                        labelText: 'Username',
-                        fillColor: Colors.white,
-                      ),
-                    ),
-                  ),
+                  const SizedBox(height: 20),
 
-                  const SizedBox(width: 10),
-
-                  /// button
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
+                  Wrap(
+                    runSpacing: 10,
                     children: [
 
-                      BizappButton(
-                          color: Colors.grey[300]!,
-                          title: "Enter",
-                          tapCallback: ()=> _check()
-                      ),
+                      SizedBox(
+                        width: constraints.maxWidth >= 501 ? MediaQuery.sizeOf(context).width * .5 : MediaQuery.sizeOf(context).width * .9,
+                        child: TextFormField(
+                          onFieldSubmitted: (val){
+                            _check();
+                          },
+                          style: const TextStyle(fontSize: 16),
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (e) => e!.isEmpty ? 'user ID cannot empty' : null,
+                          controller: usernameController,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                          ],
+                          decoration: InputDecoration(
+                            suffixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
 
-                      const SizedBox(width: 10),
+                                IconButton(
+                                    onPressed: (){
+                                      setState(() {
+                                        usernameController.clear();
+                                      });
+                                    },
+                                    icon: const Text("Clear")),
+                                IconButton(
+                                    onPressed: () async {
+                                      await Clipboard.getData(Clipboard.kTextPlain).then((value){
+                                        usernameController.text = value?.text ?? "";
+                                      });
+                                    },
+                                    icon: const Text("Paste")),
+                                IconButton(
+                                    onPressed: ()=> _check(),
+                                    icon: const Text("Enter")),
 
-                      BizappButton(
-                        color: Colors.green[300]!,
-                        title: "Export to Excel",
-                        tapCallback: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=> const ListToExcel())),
+                              ],
+                            ),
+                            border: const OutlineInputBorder(
+                              borderSide: BorderSide(
+                                width: 0, style: BorderStyle.solid,
+                              ),
+                            ),
+                            filled: true,
+                            labelStyle: const TextStyle(fontSize: 20),
+                            labelText: 'Username',
+                            fillColor: Colors.white,
+                          ),
+                        ),
                       ),
 
                     ],
                   ),
 
+                  const SizedBox(height: 20),
+
+                  _body2(constraints),
+
+                  const SizedBox(height: 100),
+
                 ],
-              ),
-
-              const SizedBox(height: 20),
-
-              _body2(),
-
-              const SizedBox(height: 100),
-
-            ],
-          ),
+              );
+            },
+          )
         ),
       ),
     );
@@ -126,7 +141,7 @@ class _TestRenewState extends State<TestRenew> {
     ),) : const SizedBox();
   }
 
-  Widget _body2(){
+  Widget _body2(BoxConstraints constraints){
     return _call == false ? Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -148,11 +163,11 @@ class _TestRenewState extends State<TestRenew> {
 
               _tips(),
               basicplusonly != "-" && basicplusonly != "" ?
-                BizappText(text: "Basic+ Add On: $basicplusonly\n") : const SizedBox(),
+              BizappText(text: "Basic+ Add On: $basicplusonly\n") : const SizedBox(),
 
             ]),
 
-            const SizedBox(width: 10),
+            SizedBox(width: constraints.maxWidth >= 501 ? 120 : 10),
 
             /// data rekod
             _callDedagang == false ? DataRekod(children: [
@@ -179,7 +194,8 @@ class _TestRenewState extends State<TestRenew> {
             : const GetLoad(text: "Load data record ...")
 
       ],
-    ) : const GetLoad(text: "Load data ...");
+    )
+        : const GetLoad(text: "Load data ...");
   }
 
 
@@ -212,7 +228,7 @@ class _TestRenewState extends State<TestRenew> {
   Future loginServices() async {
     Map<String, dynamic> body = {
       "username": usernameController.text,
-      "password": "abc280801z",
+      "password": Env.cariapa,
       "DOMAIN": "BIZAPP",
       "platform" : "Android",
       "lastseenversion" : "",
@@ -220,7 +236,7 @@ class _TestRenewState extends State<TestRenew> {
       "regid": ""
     };
 
-    await http.post(Uri.parse("https://corrad.visionice.net/bizapp/apigenerator_VERSIX.php?api_name=TRACK_LOGIN"), body: body).then((res) {
+    await http.post(Uri.parse(Env.loginurl), body: body).then((res) async {
       final resJSON = json.decode(res.body);
 
       setState(() {
@@ -232,19 +248,7 @@ class _TestRenewState extends State<TestRenew> {
         setState(() {
           _callDedagang = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          onVisible: (){
-            HapticFeedback.vibrate().timeout(const Duration(milliseconds: 1500));
-            HapticFeedback.heavyImpact();
-          },
-          duration: const Duration(seconds: 4),
-          behavior: SnackBarBehavior.floating,
-          content: const Text("Error. Sila panggil Faiz", style: TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 18, color: Colors.white,
-            //fontWeight: FontWeight.bold
-          )),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp());
       });
 
       _getRekod(resJSON[0]['pid']);
@@ -280,19 +284,7 @@ class _TestRenewState extends State<TestRenew> {
       setState(() {
         _call = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        onVisible: (){
-          HapticFeedback.vibrate().timeout(const Duration(milliseconds: 1500));
-          HapticFeedback.heavyImpact();
-        },
-        duration: const Duration(seconds: 4),
-        behavior: SnackBarBehavior.floating,
-        content: const Text("Error. Sila panggil Faiz", style: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 18, color: Colors.white,
-          //fontWeight: FontWeight.bold
-        )),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp());
     });
   }
 
@@ -304,7 +296,7 @@ class _TestRenewState extends State<TestRenew> {
       "TOKEN": "aa",
     };
 
-    await http.post(Uri.parse("https://corrad.visionice.net/bizapp/apigenerator_VERSIX.php?api_name=TRACK_GET_STATISTICS&TX="), body: body).then((res) {
+    await http.post(Uri.parse(Env.statisticurl), body: body).then((res) {
       final resJSON = json.decode(res.body);
       setState(() {
         _callDedagang = false;
@@ -339,7 +331,7 @@ class _TestRenewState extends State<TestRenew> {
       _listrekod.clear();
     });
 
-    await http.post(Uri.parse("https://corrad.visionice.net/bizapp/apigenerator_VERSIX.php?api_name=TRACK_LIST_DONETRACKINGNO&TX="), body: body).then((res) {
+    await http.post(Uri.parse(Env.rekodurl), body: body).then((res) {
       final resJSON = json.decode(res.body);
       setState(() {
         _callRekod = false;
@@ -362,18 +354,7 @@ class _TestRenewState extends State<TestRenew> {
         _call = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        onVisible: (){
-          HapticFeedback.vibrate().timeout(const Duration(milliseconds: 1500));
-          HapticFeedback.heavyImpact();
-        },
-        duration: const Duration(seconds: 4),
-        behavior: SnackBarBehavior.floating,
-        content: const Text("Error. Sila panggil Faiz", style: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 18, color: Colors.white,
-        )),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp());
 
     });
   }

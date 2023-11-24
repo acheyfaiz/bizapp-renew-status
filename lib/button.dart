@@ -16,7 +16,9 @@ class BizappButton extends StatelessWidget {
       child: IconButton(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           onPressed: tapCallback,
-          icon: Text(title)
+          icon: Text(title, style: const TextStyle(
+            color: Colors.white
+          ))
       ),
     );
   }
