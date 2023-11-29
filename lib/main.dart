@@ -1,6 +1,8 @@
 import 'package:bizapptrack/status.dart';
+import 'package:bizapptrack/status_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
@@ -13,7 +15,12 @@ Future<void> main() async{
     );
     usePathUrlStrategy();
 
-    runApp(const MyApp());
+    runApp(
+      MultiProvider(providers: [
+        ChangeNotifierProvider(create: (_)=> StatusController())
+      ],
+          child: const MyApp())
+    );
 
   } catch (error) {
     debugPrint("error di main.dart:: $error");

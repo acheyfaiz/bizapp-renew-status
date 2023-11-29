@@ -5,9 +5,11 @@ import 'package:bizapptrack/data_user.dart';
 import 'package:bizapptrack/env.dart';
 import 'package:bizapptrack/list_to_excel.dart';
 import 'package:bizapptrack/loading_widget.dart';
+import 'package:bizapptrack/status_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class TestRenew extends StatefulWidget {
   const TestRenew({super.key});
@@ -136,7 +138,7 @@ class _TestRenewState extends State<TestRenew> {
   }
 
   Widget _tips(){
-    return tarikhtamat != "" ? const Text("* Adakah tarikh tamat backdated?\nJika ya, pakej user ni dah expired\n\n", style: TextStyle(
+    return context.read<StatusController>().tarikhtamat != "" ? const Text("* Adakah tarikh tamat backdated?\nJika ya, pakej user ni dah expired\n\n", style: TextStyle(
       fontSize: 17, fontWeight: FontWeight.w300
     ),) : const SizedBox();
   }
@@ -153,17 +155,17 @@ class _TestRenewState extends State<TestRenew> {
 
             /// data user
             DataUser(children: [
-              BizappText(text: "Username:  ${username.toLowerCase()}"),
-              BizappText(text: "Nama:  $nama"),
-              BizappText(text: "Pakej:  $roleid"),
-              BizappText(text: "Tarikh naik taraf:  $tarikhnaiktaraf"),
-              Text("Tarikh tamat:  $tarikhtamat", style: const TextStyle(
+              BizappText(text: "Username:  ${context.read<StatusController>().username}"),
+              BizappText(text: "Nama:  ${context.read<StatusController>().nama}"),
+              BizappText(text: "Pakej:  ${context.read<StatusController>().roleid}"),
+              BizappText(text: "Tarikh naik taraf:  ${context.read<StatusController>().tarikhnaiktaraf}"),
+              Text("Tarikh tamat:  ${context.read<StatusController>().tarikhtamat}", style: const TextStyle(
                   fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red
               )),
 
               _tips(),
-              basicplusonly != "-" && basicplusonly != "" ?
-              BizappText(text: "Basic+ Add On: $basicplusonly\n") : const SizedBox(),
+              context.read<StatusController>().basicplusonly != "-" && context.read<StatusController>().basicplusonly != "" ?
+              BizappText(text: "Basic+ Add On: ${context.read<StatusController>().basicplusonly}\n") : const SizedBox(),
 
             ]),
 
@@ -208,13 +210,13 @@ class _TestRenewState extends State<TestRenew> {
   //////////////////////////////////////////////////
   //////////////////////////////////////////////////
 
-  String username = "";
-  String sk = "";
-  String nama = "";
-  String roleid = "";
-  String tarikhnaiktaraf = "";
-  String tarikhtamat = "";
-  String basicplusonly = "";
+  // String username = "";
+  // String sk = "";
+  // String nama = "";
+  // String roleid = "";
+  // String tarikhnaiktaraf = "";
+  // String tarikhtamat = "";
+  // String basicplusonly = "";
 
   String _biltempahan = "-";
   String _rekodtempahan = "-";
@@ -268,15 +270,15 @@ class _TestRenewState extends State<TestRenew> {
         var accbizappay = "";
         resJSON[0]['accountBIZAPPAY'] == "Y" ? accbizappay = "Ya" : accbizappay = "Tiada";
 
-        sk = resJSON[0]['secretkey'];
-        username = resJSON[0]['penggunaid'];
-        nama = resJSON[0]['nama'];
-        roleid = pakej;
-        tarikhnaiktaraf = resJSON[0]['tarikhnaiktaraf'];
-        tarikhtamat = resJSON[0]['tarikhtamattempoh'];
+        context.read<StatusController>().sk = resJSON[0]['secretkey'];
+        context.read<StatusController>().username = resJSON[0]['penggunaid'];
+        context.read<StatusController>().nama = resJSON[0]['nama'];
+        context.read<StatusController>().roleid = pakej;
+        context.read<StatusController>().tarikhnaiktaraf = resJSON[0]['tarikhnaiktaraf'];
+        context.read<StatusController>().tarikhtamat = resJSON[0]['tarikhtamattempoh'];
         _bizappayacc = accbizappay;
-        basicplusonly = resJSON[0]['addon_module_rpt_display'];
-        basicplusonly = basicplusonly == "" || basicplusonly.isEmpty ? basicplusonly = "-" : basicplusonly.replaceAll("<br>", " ");
+        context.read<StatusController>().basicplusonly = resJSON[0]['addon_module_rpt_display'];
+        context.read<StatusController>().basicplusonly = context.read<StatusController>().basicplusonly == "" || context.read<StatusController>().basicplusonly.isEmpty ? context.read<StatusController>().basicplusonly = "-" : context.read<StatusController>().basicplusonly.replaceAll("<br>", " ");
       });
       return resJSON[0];
 
@@ -318,7 +320,7 @@ class _TestRenewState extends State<TestRenew> {
       "pid": pid,
       "DOMAIN": "BIZAPP",
       "TOKEN": "aa",
-      "sk": sk,
+      "sk": context.read<StatusController>().sk,
       "tahuntahun": "",
       "statusparcel_noorder": "",
       "jenissort": "0",
