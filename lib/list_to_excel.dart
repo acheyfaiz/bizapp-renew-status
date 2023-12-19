@@ -52,7 +52,27 @@ class _ListToExcelState extends State<ListToExcel> {
 
           const SizedBox(height: 20),
 
-          _form(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _form(),
+
+              const SizedBox(width: 20),
+
+              /// button clear list
+              MaterialButton(
+                onPressed: (){
+                  setState(() {
+                    _list.clear();
+                    _aa.clear();
+                  });
+                },
+                color: Colors.grey[300],
+                height: 60,
+                child: const Text("Clear List"),
+              ),
+            ],
+          ),
 
           const Text('1. Masukkan seberapa banyak data. Ikut seperti format di atas'),
           const Text('2. Tekan Export to Excel'),
@@ -126,18 +146,6 @@ class _ListToExcelState extends State<ListToExcel> {
         ),
         const SizedBox(width: 20),
 
-        /// button clear list
-        MaterialButton(
-          onPressed: (){
-            setState(() {
-              _list.clear();
-              _aa.clear();
-            });
-          },
-          color: Colors.grey[300],
-          height: 60,
-          child: const Text("Clear List"),
-        ),
         const SizedBox(width: 20),
 
         /// button export to excel
