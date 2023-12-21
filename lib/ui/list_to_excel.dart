@@ -33,6 +33,7 @@ class _ListToExcelState extends State<ListToExcel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xfff0f8ff),
       appBar: AppBar(
 
         backgroundColor: Colors.blue,
@@ -225,87 +226,37 @@ class _ListToExcelState extends State<ListToExcel> {
     );
   }
 
-  String _penggunaid = "";
-  String _nama = "";
-  String _pakej = "";
-  String _tarikh = "";
-  String _emel = "";
-  String _nohp = "";
-  String _dedagang = "";
-
   int a = 0;
+  List<String> userStrings = [];
 
   _checksmartEntryI(){
 
-    debugPrint("${_controller.text}\n");
+    for (String userString in _controller.text.split('\n\n\n')) {
 
-    var cust = _controller.text.split("\n");
-    debugPrint("* ${cust[0]}");
+      List<String> lines = userString.split('\n');
+      String penggunaId = lines[0].split(' : ')[1].trim();
+      String nama = lines[1].split(' : ')[1].trim();
+      String pakej = lines[2].split(' : ')[1].trim();
+      String tarikhExpired = lines[3].split(' : ')[1].trim();
+      String emel = lines[4].split(' : ')[1].trim();
+      String noHp = lines[5].split(' : ')[1].trim();
+      String dedagang = lines[6].split(' : ')[1].trim();
 
-    setState(() {
-      _penggunaid = cust[0];
-      _nama = cust[1];
-      _pakej = cust[2];
-      _tarikh = cust[3];
-      _emel = cust[4];
-      _nohp = cust[5];
-      _dedagang = cust[6];
-    });
-
-    _list.add(
-        PenggunaModel(
-          penggunaid: _penggunaid.replaceAll("PENGGUNAID : ", ""),
-          nama: _nama.replaceAll("NAMA : ", ""),
-          pakej: _pakej.replaceAll("PAKEJ : ", ""),
-          tarikh: _tarikh.replaceAll("TARIKH EXPIRED : ", ""),
-          emel: _emel.replaceAll("EMEL : ", ""),
-          nohp: _nohp.replaceAll("NO H/P : ", ""),
-          dedagang: _dedagang.replaceAll("ONBOARD DEDAGANG : ", ""),
-        ));
-
-    _controller.clear();
+      PenggunaModel user = PenggunaModel(
+        penggunaid: penggunaId,
+        nama: nama,
+        pakej: pakej,
+        tarikh: tarikhExpired,
+        emel: emel,
+        nohp: noHp,
+        dedagang: dedagang
+      );
+      setState(() {
+        _list.add(user);
+      });
+    }
 
   }
-
-  // _check2(){
-  //   // RegExp exp = RegExp(r"^[0-9]+$");
-  //   // print(_controller.text.split("\n"));
-  //
-  //   // List<String> lines = _controller.text.split('\n'); // Split by line breaks
-  //   //
-  //   // List<Map<String, String>> userData = [];
-  //   // List<Map<String, PenggunaModel>> _data = [];
-  //   //
-  //   // for (String line in lines) {
-  //   //   if (line.trim().isEmpty) continue;
-  //   //
-  //   //   List<String> parts = line.split(RegExp(r'[0-9)\s]+')); // Split by ')' and whitespace
-  //   //   if (parts.length >= 2) {
-  //   //     String number = parts[0];
-  //   //     String data = parts.sublist(1).join(' ');
-  //   //     userData.add({"Number": number, "Data": data});
-  //   //     _data.add({});
-  //   //   }
-  //   // }
-  //   //
-  //   // // Printing the result
-  //   // for (var user in userData) {
-  //   //   print("Number: ${user["Number"]}");
-  //   //   print("Data: ${user["Data"]}");
-  //   //   print(""); // Separate entries
-  //   // }
-  //
-  //   ///
-  //
-  //   print(_controller.text.split("\n"));
-  //
-  //   var _a = _controller.text.split("NAMA : ");
-  //   print(_a[0]);
-  //
-  //
-  //
-  // }
-
 
   /// to export list to excel
   Future<void> _exportListToExcel(List<Map<String, dynamic>> dataList) async {
