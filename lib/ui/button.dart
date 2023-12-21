@@ -11,10 +11,10 @@ class BizappButton extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(10)
+          borderRadius: BorderRadius.circular(80)
       ),
       child: IconButton(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 30),
           onPressed: tapCallback,
           icon: Text(title, style: const TextStyle(
             color: Colors.white
@@ -31,7 +31,7 @@ class BizappText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text, style: const TextStyle(
-        fontSize: 20, fontWeight: FontWeight.bold
+        fontSize: 16, fontWeight: FontWeight.bold
     ));
   }
 }

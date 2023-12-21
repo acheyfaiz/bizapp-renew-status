@@ -22,131 +22,88 @@ class _TestRenewState extends State<TestRenew> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xfff0f8ff),
+      floatingActionButton:  BizappButton(
+        color: Colors.black87,
+        title: "Export Excel",
+        tapCallback: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=> const ListToExcel())),
+      ),
+
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        toolbarHeight: 100,
-        title: const Text("Status Renew Bizapp User", style: TextStyle(
-          color: Colors.white
-        )),
+        backgroundColor: Colors.transparent,
         actions: [
-
-          BizappButton(
-            color: Colors.transparent,
-            title: "Export to Excel",
-            tapCallback: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=> const ListToExcel())),
-          ),
-
-          const SizedBox(width: 20),
 
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: Text(Env.versi, style: const TextStyle(
-              color: Colors.white
+              color: Colors.black
             )),
           )
         ],
       ),
 
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: LayoutBuilder(
-            builder: (context, constraints){
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+      body: LayoutBuilder(
+        builder: (context, constraints)=> Consumer<StatusController>(
+          builder: (context, model, child) {
+            return SingleChildScrollView(
+              child: Center(
+                child: Column(
+                      children: [
 
-                  const SizedBox(height: 20),
+                        const Header(),
 
-                  Wrap(
-                    runSpacing: 10,
-                    children: [
+                        const SizedBox(height: 20),
 
-                      Consumer<StatusController>(
-                        builder: (context, model, child)=> SizedBox(
-                          width: constraints.maxWidth >= 501 ? MediaQuery.sizeOf(context).width * .5 : MediaQuery.sizeOf(context).width * .9,
-                          child: TextFormField(
-                            onFieldSubmitted: (val){
-                              setState(() {
-                                model.call = true;
-                              });
-                              model.loginServices(context, username: usernameController.text).then((value) {
+                        FormStatus(constraints: constraints, controller: usernameController),
+                        const SizedBox(height: 10),
+
+                        /// button
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+
+                            BizappButton(
+                              color: Colors.green,
+                              title: "Enter",
+                              tapCallback: (){
                                 setState(() {
-                                  model.call = false;
+                                  model.call = true;
                                 });
-                              });
-                            },
-                            style: const TextStyle(fontSize: 16),
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (e) => e!.isEmpty ? 'user ID cannot empty' : null,
-                            controller: usernameController,
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
-                            ],
-                            decoration: InputDecoration(
-                              suffixIcon: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
+                                model.loginServices(context, userid: usernameController.text).then((value) {
+                                  setState(() {
+                                    model.call = false;
+                                  });
+                                });
+                              }),
+                            const SizedBox(width: 10),
 
-                                  IconButton(
-                                      onPressed: (){
-                                        setState(() {
-                                          usernameController.clear();
-                                        });
-                                      },
-                                      icon: const Text("Clear")),
-                                  IconButton(
-                                      onPressed: () async {
-                                        await Clipboard.getData(Clipboard.kTextPlain).then((value){
-                                          usernameController.text = value?.text ?? "";
-                                        });
-                                      },
-                                      icon: const Text("Paste")),
-                                  IconButton(
-                                      onPressed: (){
-                                        setState(() {
-                                          model.call = true;
-                                        });
-                                        model.loginServices(context, username: usernameController.text).then((value) {
-                                          setState(() {
-                                            model.call = false;
-                                          });
-                                        });
-                                      },
-                                      icon: const Text("Enter")),
+                            BizappButton(
+                                color: Colors.lightBlue[400]!,
+                                title: "Paste",
+                                tapCallback: () async {
+                                  await Clipboard.getData(Clipboard.kTextPlain).then((value){
+                                    usernameController.text = value?.text ?? "";
+                                  });
+                                }),
+                            const SizedBox(width: 10),
 
-                                ],
-                              ),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  width: 0, style: BorderStyle.solid,
-                                ),
-                              ),
-                              filled: true,
-                              labelStyle: const TextStyle(fontSize: 20),
-                              labelText: 'Username',
-                              fillColor: Colors.white,
+                            BizappButton(
+                                color: Colors.red[400]!,
+                                title: "Clear",
+                                tapCallback: () => usernameController.clear()
                             ),
-                          ),
+
+                          ],
                         ),
-                      ),
+                        const SizedBox(height: 10),
 
-                    ],
-                  ),
+                        _body2(constraints)
 
-                  const SizedBox(height: 20),
-
-                  _body2(constraints),
-
-                  const SizedBox(height: 100),
-
-                ],
-              );
-            },
-          )
+                      ],
+                    ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -154,7 +111,7 @@ class _TestRenewState extends State<TestRenew> {
 
   Widget _tips(){
     return context.read<StatusController>().tarikhtamat != "" ? const Text("* Adakah tarikh tamat backdated?\nJika ya, pakej user ni dah expired\n\n", style: TextStyle(
-      fontSize: 17, fontWeight: FontWeight.w300
+      fontSize: 14, fontWeight: FontWeight.w300
     ),) : const SizedBox();
   }
 
@@ -167,7 +124,7 @@ class _TestRenewState extends State<TestRenew> {
           children: [
 
             Wrap(
-              runSpacing: 10,
+              runSpacing: 5,
               children: [
 
                 /// data user
@@ -177,7 +134,7 @@ class _TestRenewState extends State<TestRenew> {
                   BizappText(text: "Pakej:  ${provider.roleid}"),
                   BizappText(text: "Tarikh naik taraf:  ${provider.tarikhnaiktaraf}"),
                   Text("Tarikh tamat:  ${provider.tarikhtamat}", style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red
+                      fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red
                   )),
 
                   _tips(),
@@ -186,7 +143,7 @@ class _TestRenewState extends State<TestRenew> {
 
                 ]),
 
-                SizedBox(width: constraints.maxWidth >= 501 ? 120 : 10),
+                SizedBox(width: constraints.maxWidth >= 501 ? 50 : 10),
 
                 /// data rekod
                 provider.callDedagang == false ? DataRekod(children: [
@@ -201,15 +158,15 @@ class _TestRenewState extends State<TestRenew> {
               ],
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 0),
             const BizappText(text: 'Senarai rekod 5 terakhir: '),
 
             /// data list
             provider.callRekod == false ?
             provider.listrekod.isEmpty ? const Text('Tiada Rekod', style: TextStyle(
-              fontSize: 20,
+              fontSize: 16,
             ))
-                : DataList(listrekod: provider.listrekod)
+                : Center(child: DataList(listrekod: provider.listrekod))
                 : const GetLoad(text: "Load data record ...")
 
           ],
@@ -220,3 +177,59 @@ class _TestRenewState extends State<TestRenew> {
   }
 
 }
+
+class Header extends StatelessWidget {
+  const Header({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(80)
+      ),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Text("Status Renew Bizapp User", style: TextStyle(
+         fontSize: 16
+        )),
+      ),
+    );
+  }
+}
+
+class FormStatus extends StatelessWidget {
+  final BoxConstraints constraints;
+  final TextEditingController controller;
+  const FormStatus({super.key, required this.constraints, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: constraints.maxWidth >= 501 ? MediaQuery.sizeOf(context).width * .5 : MediaQuery.sizeOf(context).width * .9,
+      child: TextFormField(
+        style: const TextStyle(fontSize: 16),
+        keyboardType: TextInputType.emailAddress,
+        validator: (e) => e!.isEmpty ? 'username cannot empty' : null,
+        controller: controller,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+        ],
+        decoration: const InputDecoration(
+          hoverColor: Colors.transparent,
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              width: 0, style: BorderStyle.solid,
+            ),
+          ),
+          filled: true,
+          labelStyle: TextStyle(fontSize: 14),
+          labelText: 'Username',
+          fillColor: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+

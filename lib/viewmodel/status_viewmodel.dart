@@ -1,10 +1,8 @@
 import 'package:bizapptrack/utils/constant.dart';
 import 'package:bizapptrack/env.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 
 class StatusController extends ChangeNotifier{
 
@@ -25,10 +23,10 @@ class StatusController extends ChangeNotifier{
   bool callDedagang = false;
   bool callRekod = false;
 
-  Future loginServices(BuildContext context, {required String username}) async {
+  Future loginServices(BuildContext context, {required String userid}) async {
 
     Map<String, dynamic> body = {
-      "username": username,
+      "username": userid,
       "password": Env.cariapa,
       "DOMAIN": "BIZAPP",
       "platform" : "Android",
@@ -49,7 +47,7 @@ class StatusController extends ChangeNotifier{
       _dedagang(resJSON[0]['pid']).onError((error, stackTrace) {
         callDedagang = false;
         notifyListeners();
-        ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp());
+        ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp("error dedagang"));
       });
 
       _getRekod(resJSON[0]['pid']);
@@ -85,7 +83,7 @@ class StatusController extends ChangeNotifier{
       call = false;
       notifyListeners();
 
-      ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp());
+      ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp("error login"));
     });
   }
 
@@ -140,14 +138,14 @@ class StatusController extends ChangeNotifier{
   check(BuildContext context, String username){
     call = true;
     notifyListeners();
-    loginServices(context, username: username).then((value) {
+    loginServices(context, userid: username).then((value) {
       call = false;
       notifyListeners();
     }).onError((error, stackTrace) {
       call = false;
       notifyListeners();
 
-      ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp());
+      ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp(""));
 
     });
   }
