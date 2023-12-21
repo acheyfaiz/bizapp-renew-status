@@ -1,27 +1,24 @@
-import 'package:bizapptrack/status.dart';
-import 'package:bizapptrack/status_viewmodel.dart';
+import 'package:bizapptrack/ui/status.dart';
+import 'package:bizapptrack/viewmodel/status_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
-Future<void> main() async{
+Future<void> main() async {
   try {
-
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     usePathUrlStrategy();
 
-    runApp(
-      MultiProvider(providers: [
-        ChangeNotifierProvider(create: (_)=> StatusController())
-      ],
-          child: const MyApp())
-    );
-
+    runApp(MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StatusController())
+        ],
+        child: const MyApp()));
   } catch (error) {
     debugPrint("error di main.dart:: $error");
     debugPrint(error.toString());

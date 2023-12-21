@@ -1,4 +1,4 @@
-import 'package:bizapptrack/constant.dart';
+import 'package:bizapptrack/utils/constant.dart';
 import 'package:bizapptrack/env.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,8 @@ class StatusController extends ChangeNotifier{
   bool callDedagang = false;
   bool callRekod = false;
 
-  Future loginServices(context, {required String username}) async {
+  Future loginServices(BuildContext context, {required String username}) async {
+
     Map<String, dynamic> body = {
       "username": username,
       "password": Env.cariapa,
@@ -38,18 +39,20 @@ class StatusController extends ChangeNotifier{
 
     await http.post(Uri.parse(Env.loginurl), body: body).then((res) async {
       final resJSON = json.decode(res.body);
+      call = false;
+      notifyListeners();
 
       callDedagang = true;
       notifyListeners();
 
       /// check de dagang
-      // _dedagang(resJSON[0]['pid']).onError((error, stackTrace) {
-      //   callDedagang = false;
-      //   notifyListeners();
-      //   ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp());
-      // });
-      //
-      // _getRekod(resJSON[0]['pid']);
+      _dedagang(resJSON[0]['pid']).onError((error, stackTrace) {
+        callDedagang = false;
+        notifyListeners();
+        ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp());
+      });
+
+      _getRekod(resJSON[0]['pid']);
 
         var report = resJSON[0]['addon_module_rpt'];
 
@@ -83,6 +86,69 @@ class StatusController extends ChangeNotifier{
       notifyListeners();
 
       ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp());
+    });
+  }
+
+  String dedagang = "-";
+  Future _dedagang(String pid) async {
+    Map<String, dynamic> body = {
+      "pid": pid,
+      "DOMAIN": "BIZAPP",
+      "TOKEN": "aa",
+    };
+
+    await http.post(Uri.parse(Env.statisticurl), body: body).then((res) {
+      final resJSON = json.decode(res.body);
+      callDedagang = false;
+      var x = resJSON[0]['dedagang_offer'];
+      x == "0" ? dedagang = "No" : dedagang = "Yes";
+
+      biltempahan = resJSON[0]['TOTALORDER'];
+      biltempahan = biltempahan.replaceAll(",", "");
+      rekodtempahan = resJSON[0]['TOTALORDERDONE'];
+      bilEjen = resJSON[0]['COUNTAGENT'];
+      notifyListeners();
+    });
+  }
+
+  final List listrekod = [];
+  Future _getRekod(String pid) async {
+    Map<String, dynamic> body = {
+      "pid": pid,
+      "DOMAIN": "BIZAPP",
+      "TOKEN": "aa",
+      "sk": sk,
+      "tahuntahun": "",
+      "statusparcel_noorder": "",
+      "jenissort": "0",
+      "loadsemua": "NO",
+      "start": "0",
+    };
+
+    callRekod = true;
+    listrekod.clear();
+    notifyListeners();
+
+    await http.post(Uri.parse(Env.rekodurl), body: body).then((res) {
+      final resJSON = json.decode(res.body);
+      callRekod = false;
+      listrekod.addAll(resJSON);
+      notifyListeners();
+    });
+  }
+
+  check(BuildContext context, String username){
+    call = true;
+    notifyListeners();
+    loginServices(context, username: username).then((value) {
+      call = false;
+      notifyListeners();
+    }).onError((error, stackTrace) {
+      call = false;
+      notifyListeners();
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBarBizapp());
+
     });
   }
 
