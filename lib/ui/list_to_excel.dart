@@ -1,3 +1,4 @@
+import 'package:bizapptrack/ui/button.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,10 +36,13 @@ class _ListToExcelState extends State<ListToExcel> {
     return Scaffold(
       backgroundColor: const Color(0xfff0f8ff),
       appBar: AppBar(
-
-        backgroundColor: Colors.blue,
+        leading: IconButton(
+          onPressed: ()=> Navigator.pop(context),
+          icon: const Icon(Icons.chevron_left),
+        ),
+        backgroundColor: Colors.transparent,
         title: const Text("List to Excel", style: TextStyle(
-            color: Colors.white
+            color: Colors.black87, fontSize: 16
         ),),
       ),
       body: _body(),
@@ -61,19 +65,20 @@ class _ListToExcelState extends State<ListToExcel> {
               const SizedBox(width: 20),
 
               /// button clear list
-              MaterialButton(
-                onPressed: (){
-                  setState(() {
-                    _list.clear();
-                    _aa.clear();
-                  });
-                },
-                color: Colors.grey[300],
-                height: 60,
-                child: const Text("Clear List"),
+              BizappButton(
+                  color: Colors.grey,
+                  title: "Clear List",
+                  tapCallback: (){
+                    setState(() {
+                      _list.clear();
+                      _aa.clear();
+                    });
+                  }
               ),
+
             ],
           ),
+          const SizedBox(height: 10),
 
           const Text('1. Masukkan seberapa banyak data. Ikut seperti format di atas'),
           const Text('2. Tekan Export to Excel'),
@@ -129,55 +134,50 @@ class _ListToExcelState extends State<ListToExcel> {
       children: [
 
         /// button enter
-        MaterialButton(
-          onPressed: (){
-
-            if(_controller.text.isEmpty){
-              ScaffoldMessenger.of(context).showSnackBar(_popup("Sila masukkan data"));
+        BizappButton(
+            color: Colors.lightBlueAccent,
+            title: "Enter",
+            tapCallback: (){
+              if(_controller.text.isEmpty){
+                ScaffoldMessenger.of(context).showSnackBar(_popup("Sila masukkan data"));
+              }
+              else{
+                _checksmartEntryI();
+                // _check2();
+              }
             }
-            else{
-              _checksmartEntryI();
-              // _check2();
-            }
-
-          },
-          color: Colors.grey[300],
-          height: 60,
-          child: const Text("Enter"),
         ),
         const SizedBox(width: 20),
 
         const SizedBox(width: 20),
 
         /// button export to excel
-        MaterialButton(
-          onPressed: (){
+        BizappButton(
+            color: Colors.green,
+            title: "Export to Excel",
+            tapCallback: (){
 
-            if(_list.isEmpty){
-              ScaffoldMessenger.of(context).showSnackBar(_popup("Tiada data. Masukkan data"));
+              if(_list.isEmpty){
+                ScaffoldMessenger.of(context).showSnackBar(_popup("Tiada data. Masukkan data"));
+              }
+              else{
+                _aa.clear();
+                _list.map((e) {
+
+                  _aa.add({_col1: e.penggunaid, _col2: e.nama, _col3: e.pakej, _col4: e.tarikh, _col5: e.emel, _col6: e.nohp, _col7: e.dedagang});
+
+                }).toList();
+
+                _exportListToExcel(_aa).then((_) {
+                  debugPrint('Excel file exported successfully');
+                  ScaffoldMessenger.of(context).showSnackBar(_popup("Excel file exported successfully"));
+                }).catchError((error) {
+                  ScaffoldMessenger.of(context).showSnackBar(_popup("Error exporting Excel file: $error"));
+                });
+              }
+
             }
-            else{
-              _aa.clear();
-              _list.map((e) {
-
-                _aa.add({_col1: e.penggunaid, _col2: e.nama, _col3: e.pakej, _col4: e.tarikh, _col5: e.emel, _col6: e.nohp, _col7: e.dedagang});
-
-              }).toList();
-
-              _exportListToExcel(_aa).then((_) {
-                debugPrint('Excel file exported successfully');
-                ScaffoldMessenger.of(context).showSnackBar(_popup("Excel file exported successfully"));
-              }).catchError((error) {
-                ScaffoldMessenger.of(context).showSnackBar(_popup("Error exporting Excel file: $error"));
-              });
-            }
-
-          },
-          color: Colors.green[300],
-          height: 60,
-          child: const Text("Export to Excel", style: TextStyle(color: Colors.white)),
         ),
-
       ],
     );
   }
