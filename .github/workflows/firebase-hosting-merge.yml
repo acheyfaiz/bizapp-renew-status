@@ -11,9 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: 'run flutter clean'
       - run: flutter clean && flutter pub get
-      - run: 'run flutter build'
       - run: flutter build web --dart-define=FLUTTER_WEB_USE_SKIA=true --release
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
