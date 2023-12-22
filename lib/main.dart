@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
+// test action
 Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
