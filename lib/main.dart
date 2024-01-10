@@ -1,25 +1,24 @@
-import 'package:bizapptrack/ui/status.dart';
-import 'package:bizapptrack/viewmodel/status_viewmodel.dart';
+import 'package:bizapptrack/bloc_status/status_bloc.dart';
+import 'package:bizapptrack/ui/bloc_ui/status.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'firebase_options.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
-// test action
 Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+      options: kIsWeb ? DefaultFirebaseOptions.currentPlatform : null,
     );
     usePathUrlStrategy();
 
-    runApp(MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => StatusController())
-        ],
-        child: const MyApp()));
+    runApp(BlocProvider(
+      create: (context)=> StatusBloc(),
+        child: const MyApp()
+    ));
   } catch (error) {
     debugPrint("error di main.dart:: $error");
     debugPrint(error.toString());
@@ -29,7 +28,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -38,9 +36,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      // home: const TestFirebase(),
-      home: const TestRenew(),
-      // home: const ListToExcel(),
+      home: StatusScreen(),
     );
   }
 }
