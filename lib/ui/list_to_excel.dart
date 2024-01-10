@@ -72,6 +72,7 @@ class _ListToExcelState extends State<ListToExcel> {
                     setState(() {
                       _list.clear();
                       _aa.clear();
+                      _controller.clear();
                     });
                   }
               ),
