@@ -14,20 +14,6 @@ class DataUser extends StatelessWidget {
   }
 }
 
-class DataRekod extends StatelessWidget {
-  final List<Widget> children;
-  const DataRekod({super.key, required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
-    );
-  }
-}
-
 class DataList extends StatelessWidget {
   final List listrekod;
   const DataList({super.key, required this.listrekod});

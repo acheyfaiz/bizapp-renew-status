@@ -146,7 +146,7 @@ class _TestRenewState extends State<TestRenew> {
                 SizedBox(width: constraints.maxWidth >= 501 ? 50 : 10),
 
                 /// data rekod
-                provider.callDedagang == false ? DataRekod(children: [
+                provider.callDedagang == false ? DataUser(children: [
                   BizappText(text: "Rekod Tempahan : ${provider.rekodtempahan}"),
                   const SizedBox(height: 10),
                   BizappText(text: "Bil. Tempahan : ${provider.biltempahan}"),
